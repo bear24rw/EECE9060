@@ -13,13 +13,14 @@ module top(
     output [6:0] HEX3,
 
     input  UART_RXD,
-    output UART_TXD,
+    output UART_TXD
 );
 
     wire cpu_clk = CLOCK_50;
     wire rst = KEY[0];
 
     wire [15:0] addr;
+    wire       cpu_we;
     wire [7:0] cpu_di;
     wire [7:0] cpu_do;
     wire [7:0] ram_di;
@@ -31,10 +32,10 @@ module top(
     wire uart_rx_done;
     wire uart_tx_done;
     wire uart_transmit;
-    wire [7:0] seg0;
-    wire [7:0] seg1;
-    wire [7:0] seg2;
-    wire [7:0] seg3;
+    wire [6:0] seg0;
+    wire [6:0] seg1;
+    wire [6:0] seg2;
+    wire [6:0] seg3;
 
     cpu cpu(
         .clk(cpu_clk),

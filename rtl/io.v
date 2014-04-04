@@ -1,10 +1,12 @@
+`include "mem_map.v"
+
 module io(
     input clk,
     input rst,
 
     input     [15:0] addr,
     input            we,
-    input  reg [7:0] do,
+    output reg [7:0] do,
     input      [7:0] di,
 
     input      [9:0] switches,
@@ -45,10 +47,10 @@ module io(
                 case (addr)
                     `ADDR_LEDR: ledr <= di;
                     `ADDR_LEDG: ledg <= di;
-                    `ADDR_SEG0: seg0 <= di;
-                    `ADDR_SEG1: seg1 <= di;
-                    `ADDR_SEG2: seg2 <= di;
-                    `ADDR_SEG3: seg3 <= di;
+                    `ADDR_SEG0: seg0 <= di[6:0];
+                    `ADDR_SEG1: seg1 <= di[6:0];
+                    `ADDR_SEG2: seg2 <= di[6:0];
+                    `ADDR_SEG3: seg3 <= di[6:0];
                     `ADDR_UART_TXD: uart_txd_data <= di;
                     `ADDR_UART_CTL: uart_control[2] <= di[2];
                 endcase
