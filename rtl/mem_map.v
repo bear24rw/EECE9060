@@ -1,0 +1,12 @@
+`define ADDR_KEY        'd0
+`define ADDR_SW         'd1
+`define ADDR_LEDR       'd2
+`define ADDR_LEDG       'd3
+`define ADDR_SEG0       'd4
+`define ADDR_SEG1       'd5
+`define ADDR_SEG2       'd6
+`define ADDR_SEG3       'd7
+`define ADDR_UART_RXD   'd8
+`define ADDR_UART_TXD   'd9
+`define ADDR_UART_CTL   'd10
+`define ADDR_RAM        'd11
