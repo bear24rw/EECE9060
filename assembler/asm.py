@@ -64,10 +64,17 @@ if __name__ == "__main__":
             write_byte(bits(0))
             continue
 
-        if op in ('LDI', 'ST'):
-            a, addr = args.split(',')
-            write_byte(bits(a))
+        if op in ('LD', 'ST'):
+            d, addr = args.split(',')
+            write_byte(bits(d))
+            write_byte(bits(addr, 1))
             write_byte(bits(addr, 0))
+            continue
+
+        if op in ('LDI'):
+            d, addr = args.split(',')
+            write_byte(bits(d))
+            write_byte(bits(addr))
             write_byte(bits(0))
             continue
 

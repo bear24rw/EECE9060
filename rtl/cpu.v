@@ -17,12 +17,11 @@ module cpu(
     parameter FETCH_2 = 2;
     parameter FETCH_3 = 3;
     parameter FETCH_4 = 4;
-    parameter FETCH_5 = 5;
-    parameter DECODE  = 6;
-    parameter EXECUTE = 7;
-    parameter STORE   = 8;
+    parameter DECODE  = 5;
+    parameter EXECUTE = 6;
+    parameter STORE   = 7;
 
-    reg [8:0] state = FETCH_0;
+    reg [6:0] state = FETCH_0;
 
     always @(posedge clk) begin
         if (rst) begin
@@ -62,7 +61,7 @@ module cpu(
     reg get_data = 'b0;
 
     assign addr = get_data ? d_addr : i_addr;
-    assign we = (op_code == ST) && (state == EXECUTE);
+    assign we = (op_code == ST) && (state == STORE);
 
 
     always @(posedge clk) begin
@@ -82,6 +81,7 @@ module cpu(
         if (rst) begin
             PC <= 0;
             IR <= 0;
+            do <= 0;
         end else begin
             case (state)
 
@@ -99,7 +99,7 @@ module cpu(
 
                 EXECUTE: begin
                     case (op_code)
-                        ST:   do <= regs[op_a];
+                        ST:   do <= regs[op_d];
                         LD:   regs[op_d] <= di;
                         LDI:  regs[op_d] <= op_a;
                         MOV:  regs[op_d] <= regs[op_a];
@@ -126,6 +126,7 @@ module cpu(
     end
 
 
+    /*
     always @(posedge clk, posedge rst) begin
         if (rst) begin
             $display("[cpu] In reset");
@@ -134,11 +135,9 @@ module cpu(
                 case (op_code)
                     HALT: $display("[cpu] PC: %d IR: %b op_code: HALT" , PC, IR);
                     LD:   $display("[cpu] PC: %d IR: %b op_code: LD"   , PC, IR);
-                    ST:   $display("[cpu] PC: %d IR: %b op_code: ST"   , PC, IR);
+                    ST:   $display("[cpu] PC: %d IR: %b op_code: ST (%d = r[%d])", PC, IR, d_addr, op_d);
                     LDI:  $display("[cpu] PC: %d IR: %b op_code: LDI (r[%d] = %d", PC, IR, op_d, op_a);
-                    //LDI:  $display("[cpu] PC: %d IR: %b op_code: LDI"  , PC, IR);
                     MOV:  $display("[cpu] PC: %d IR: %b op_code: MOV"  , PC, IR);
-                    //ADD:  $display("[cpu] PC: %d IR: %b op_code: ADD"  , PC, IR);
                     ADD:  $display("[cpu] PC: %d IR: %b op_code: ADD (r[%d]: %d + r[%d]: %d"  , PC, IR, op_a, regs[op_a], op_b, regs[op_b]);
                     SUB:  $display("[cpu] PC: %d IR: %b op_code: SUB"  , PC, IR);
                     AND:  $display("[cpu] PC: %d IR: %b op_code: AND"  , PC, IR);
@@ -152,6 +151,7 @@ module cpu(
             end
         end
     end
+    */
 
     /*
     always @(posedge clk) begin
