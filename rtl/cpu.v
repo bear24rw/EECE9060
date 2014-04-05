@@ -17,10 +17,9 @@ module cpu(
     parameter FETCH_1 = 1;
     parameter FETCH_2 = 2;
     parameter FETCH_3 = 3;
-    parameter DECODE  = 5;
-    parameter FETCH_EX = 6;
-    parameter EXECUTE = 7;
-    parameter STORE   = 8;
+    parameter DECODE  = 4;
+    parameter EXECUTE = 5;
+    parameter STORE   = 6;
 
     reg [7:0] state = FETCH_0;
 
@@ -33,8 +32,7 @@ module cpu(
                 FETCH_1: state <= FETCH_2;
                 FETCH_2: state <= FETCH_3;
                 FETCH_3: state <= DECODE;
-                DECODE:  state <= FETCH_EX;
-                FETCH_EX:  state <= EXECUTE;
+                DECODE:  state <= EXECUTE;
                 EXECUTE: state <= STORE;
                 STORE:   state <= FETCH_0;
             endcase
