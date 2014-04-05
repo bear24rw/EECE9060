@@ -21,24 +21,31 @@ module io(
     output reg [6:0] seg3,
 
     input      [7:0] uart_rxd_data,
-    output reg [7:0] uart_txd_data,
+    output     [7:0] uart_txd_data,
     input            uart_rxd_done,
     input            uart_txd_done,
-    output           uart_transmit
+    output           uart_transmit,
+
+    input      [7:0] boot_tx_data,
+    input            boot_transmit,
+    input            boot_en
 );
 
-    reg [7:0] uart_control = 'b0;
-    assign uart_transmit = uart_control[2];
+    reg [7:0] uart_control = 0;
+    reg [7:0] tx_data = 0;
+
+    assign uart_transmit = boot_en ? boot_transmit : uart_control[2];
+    assign uart_txd_data  = boot_en ? boot_tx_data  : tx_data;
 
     always @(posedge clk, posedge rst) begin
         if (rst) begin
             ledr <= 'hAA;
             ledg <= 'hAA;
             seg0 <= 'hD;
-            seg1 <= 'hE;
-            seg2 <= 'hA;
+            seg1 <= 'hA;
+            seg2 <= 'hE;
             seg3 <= 'hD;
-            uart_txd_data <= 'h0;
+            tx_data <= 'h0;
             uart_control <= 'h0;
         end else begin
             uart_control[0] <= uart_rxd_done;
@@ -51,7 +58,7 @@ module io(
                     `ADDR_SEG1: seg1 <= di[6:0];
                     `ADDR_SEG2: seg2 <= di[6:0];
                     `ADDR_SEG3: seg3 <= di[6:0];
-                    `ADDR_UART_TXD: uart_txd_data <= di;
+                    `ADDR_UART_TXD: tx_data <= di;
                     `ADDR_UART_CTL: uart_control[2] <= di[2];
                 endcase
             end else begin

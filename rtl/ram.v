@@ -5,7 +5,8 @@ module ram(
     input we,
     input [ADDR_BITS-1:0] addr,
     input [7:0] di,
-    output [7:0] do
+    output [7:0] do,
+    output [ADDR_BITS-1:0] cur_addr
 );
 
     parameter WIDTH     = 8;    // 8 bits wide
@@ -30,6 +31,5 @@ module ram(
     // blocks in single port mode
     assign do = ram[addr_reg];
 
-    $readmemb("../assembler/fib.rom", ram);
-
+    assign cur_addr = addr_reg;
 endmodule

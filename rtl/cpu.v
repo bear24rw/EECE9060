@@ -48,7 +48,7 @@ module cpu(
     //
     // --------------------------------
 
-    reg [15:0] PC = 'b0;
+    reg [15:0] PC = `RESET_VECTOR;
     reg [31:0] IR = 'b0;
     reg [7:0] regs[0:255];
     reg [7:0] w_reg;

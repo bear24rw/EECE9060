@@ -41,7 +41,7 @@ module cpu_tb;
     );
 
     initial begin
-        $readmemb("../assembler/fib.rom", cpu_tb.ram.ram);
+        $readmemb("../assembler/fib.txt", cpu_tb.ram.ram);
     end
 
     // ----------------------------------------------------

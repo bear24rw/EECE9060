@@ -31,17 +31,21 @@ if __name__ == "__main__":
 
     asm_filename = sys.argv[1]
     rom_filename = sys.argv[1].replace("asm", "rom")
+    txt_filename = sys.argv[1].replace("asm", "txt")
 
     asm_file = open(asm_filename)
-    rom_file = open(rom_filename, 'w')
+    rom_file = open(rom_filename, 'wb')
+    txt_file = open(txt_filename, 'w')
 
     num_bytes = 0
+    filling = False
 
     labels = {}
 
     def write_byte(x):
         global num_bytes
-        rom_file.write(x+'\n')
+        txt_file.write(x+'\n')
+        if not filling: rom_file.write(chr(eval('0b'+x)))
         num_bytes += 1
 
     for _ in range(reset_vector):
@@ -101,6 +105,8 @@ if __name__ == "__main__":
         write_byte(bits(d))
         write_byte(bits(a))
         write_byte(bits(b))
+
+    filling = True
 
     for _ in range(ram_size - num_bytes):
         write_byte(bits(0))
