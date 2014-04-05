@@ -52,9 +52,9 @@ module cpu(
     reg [7:0] w_reg;
 
     wire [7:0]  op_code = IR[31:24];
-    wire [7:0]  op_a    = IR[23:16];
-    wire [7:0]  op_b    = IR[15:8];
-    wire [7:0]  op_d    = IR[7:0];
+    wire [7:0]  op_d    = IR[23:16];
+    wire [7:0]  op_a    = IR[15:8];
+    wire [7:0]  op_b    = IR[7:0];
     wire [15:0] d_addr  = IR[15:0];
     wire [15:0] jmp_addr = IR[23:8];
 
@@ -100,9 +100,9 @@ module cpu(
                 EXECUTE: begin
                     case (op_code)
                         ST:   do <= regs[op_a];
-                        LD:   regs[op_a] <= di;
-                        LDI:  regs[op_a] <= op_b;
-                        MOV:  regs[op_a] <= regs[op_b];
+                        LD:   regs[op_d] <= di;
+                        LDI:  regs[op_d] <= op_a;
+                        MOV:  regs[op_d] <= regs[op_a];
 
                         ADD:  regs[op_d] <= regs[op_a] + regs[op_b];
                         SUB:  regs[op_d] <= regs[op_a] - regs[op_b];

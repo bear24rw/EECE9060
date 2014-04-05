@@ -72,16 +72,16 @@ if __name__ == "__main__":
             continue
 
         if op in ('MOV'):
-            a, b = args.split(',')
+            d, a = args.split(',')
+            write_byte(bits(d))
             write_byte(bits(a))
-            write_byte(bits(b))
             write_byte(bits(0))
             continue
 
-        a, b, d = args.split(',')
+        d, a, b = args.split(',')
+        write_byte(bits(d))
         write_byte(bits(a))
         write_byte(bits(b))
-        write_byte(bits(d))
 
     for _ in range(2**16 - num_bytes):
         write_byte(bits(0))
