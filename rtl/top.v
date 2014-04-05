@@ -101,7 +101,7 @@ module top(
         .switches(SW),
         .keys(KEY),
         .ledr(LEDR),
-        //.ledg(LEDG),
+        .ledg(LEDG),
         .seg0(seg0),
         .seg1(seg1),
         .seg2(seg2),
@@ -149,8 +149,5 @@ module top(
         .ram_addr(boot_addr),
         .ram_data(boot_data)
     );
-
-    assign LEDG = ram_do;
-    //assign LEDR = ram_addr;
 
 endmodule
