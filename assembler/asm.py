@@ -16,6 +16,10 @@ op_codes = {
     'JMP': 12,
 }
 
+reset_vector = 20
+
+ram_size = 2**13
+
 def bits(number, byte_num=0):
     byte_num += 1
     number = int(number)
@@ -39,6 +43,9 @@ if __name__ == "__main__":
         global num_bytes
         rom_file.write(x+'\n')
         num_bytes += 1
+
+    for _ in range(reset_vector):
+        write_byte(bits(0))
 
     for line in asm_file:
 
@@ -94,5 +101,5 @@ if __name__ == "__main__":
         write_byte(bits(a))
         write_byte(bits(b))
 
-    for _ in range(2**16 - num_bytes):
+    for _ in range(ram_size - num_bytes):
         write_byte(bits(0))

@@ -10,9 +10,9 @@ ASSIGNMENT_FILES = top.qpf top.qsf
 SIM_TB = cpu_tb
 
 SRC = \
+	../rtl/constants.v \
 	../rtl/cpu.v \
 	../rtl/io.v \
-	../rtl/mem_map.v \
 	../rtl/mmu.v \
 	../rtl/ram.v \
 	../rtl/seven_seg.v \

@@ -1,4 +1,4 @@
-`include "mem_map.v"
+`include "constants.v"
 
 module mmu(
     input   [15:0]  addr,
@@ -10,7 +10,7 @@ module mmu(
     output  [7:0]   io_di
 );
 
-    assign cpu_di = (addr < `ADDR_RAM) ? io_do : ram_do;
+    assign cpu_di = (addr < `RESET_VECTOR) ? io_do : ram_do;
     assign ram_di = cpu_di;
     assign io_di  = cpu_do;
 

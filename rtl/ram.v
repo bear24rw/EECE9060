@@ -9,7 +9,7 @@ module ram(
 );
 
     parameter WIDTH     = 8;    // 8 bits wide
-    parameter ADDR_BITS = 16;   // 2**13 (8KB) deep
+    parameter ADDR_BITS = 13;   // 2**13 (8KB) deep
 
     reg [WIDTH-1:0] ram[(2**ADDR_BITS)-1:0];
 

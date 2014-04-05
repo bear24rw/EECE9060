@@ -58,7 +58,7 @@ module top(
 
     ram ram(
         .clk(cpu_clk),
-        .addr(addr),
+        .addr(addr[12:0]),
         .we(cpu_we),
         .do(ram_do),
         .di(ram_di)

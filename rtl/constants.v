@@ -9,4 +9,19 @@
 `define ADDR_UART_RXD   'd8
 `define ADDR_UART_TXD   'd9
 `define ADDR_UART_CTL   'd10
-`define ADDR_RAM        'd11
+
+`define RESET_VECTOR    'd20
+
+`define HALT  'd0
+`define LD    'd1
+`define ST    'd2
+`define LDI   'd3
+`define MOV   'd4
+`define ADD   'd5
+`define SUB   'd6
+`define AND   'd7
+`define OR    'd8
+`define XOR   'd9
+`define ROTL  'd10
+`define ROTR  'd11
+`define JMP   'd12

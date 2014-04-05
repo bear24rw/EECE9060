@@ -1,3 +1,5 @@
+`include "constants.v"
+
 module cpu(
     input            clk,
     input            rst,
@@ -6,7 +8,6 @@ module cpu(
     output reg [7:0] do,
     output           we
 );
-    `include "op_codes.v"
 
     // --------------------------------
     // Instruction Cycle State Machine
@@ -63,12 +64,12 @@ module cpu(
     reg get_data = 'b0;
 
     assign addr = get_data ? d_addr : i_addr;
-    assign we = (op_code == ST) && (state == STORE);
+    assign we = (op_code == `ST) && (state == STORE);
 
 
     always @(posedge clk) begin
         if (rst) begin
-            i_addr <= 0;
+            i_addr <= `RESET_VECTOR;
         end else begin
             case (state)
                 STORE:   i_addr <= PC + 0;
@@ -81,7 +82,7 @@ module cpu(
 
     always @(posedge clk) begin
         if (rst) begin
-            PC <= 0;
+            PC <= `RESET_VECTOR;
             IR <= 0;
             do <= 0;
         end else begin
@@ -94,28 +95,27 @@ module cpu(
 
                 DECODE: begin
                     get_data <= 1;
-                    if (op_code != HALT) begin
+                    if (op_code != `HALT) begin
                         PC <= PC + 4;
                     end
                 end
 
                 EXECUTE: begin
                     case (op_code)
-                        ST:   do <= regs[op_d];
-                        LD:   regs[op_d] <= di;
-                        LDI:  regs[op_d] <= op_a;
-                        MOV:  regs[op_d] <= regs[op_a];
+                        `ST:   do <= regs[op_d];
+                        `LD:   regs[op_d] <= di;
+                        `LDI:  regs[op_d] <= op_a;
+                        `MOV:  regs[op_d] <= regs[op_a];
 
-                        ADD:  regs[op_d] <= regs[op_a] + regs[op_b];
-                        SUB:  regs[op_d] <= regs[op_a] - regs[op_b];
-                        AND:  regs[op_d] <= regs[op_a] & regs[op_b];
-                        OR:   regs[op_d] <= regs[op_a] | regs[op_b];
-                        XOR:  regs[op_d] <= regs[op_a] ^ regs[op_b];
-                        ROTL: regs[op_d] <= regs[op_a] << regs[op_b];
-                        ROTR: regs[op_d] <= regs[op_a] >> regs[op_b];
+                        `ADD:  regs[op_d] <= regs[op_a] + regs[op_b];
+                        `SUB:  regs[op_d] <= regs[op_a] - regs[op_b];
+                        `AND:  regs[op_d] <= regs[op_a] & regs[op_b];
+                        `OR:   regs[op_d] <= regs[op_a] | regs[op_b];
+                        `XOR:  regs[op_d] <= regs[op_a] ^ regs[op_b];
+                        `ROTL: regs[op_d] <= regs[op_a] << regs[op_b];
+                        `ROTR: regs[op_d] <= regs[op_a] >> regs[op_b];
 
-                        JMP:  PC <= jmp_addr;
-
+                        `JMP:  PC <= jmp_addr;
                     endcase
 
                 end

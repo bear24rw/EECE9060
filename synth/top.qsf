@@ -491,9 +491,9 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW "MINIMUM CURRENT" -to *
 set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to I2C_SCLK
 set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to I2C_SDAT
 
+set_global_assignment -name VERILOG_FILE ../rtl/constants.v
 set_global_assignment -name VERILOG_FILE ../rtl/cpu.v
 set_global_assignment -name VERILOG_FILE ../rtl/io.v
-set_global_assignment -name VERILOG_FILE ../rtl/mem_map.v
 set_global_assignment -name VERILOG_FILE ../rtl/mmu.v
 set_global_assignment -name VERILOG_FILE ../rtl/ram.v
 set_global_assignment -name VERILOG_FILE ../rtl/seven_seg.v

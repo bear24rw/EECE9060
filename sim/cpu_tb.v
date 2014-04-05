@@ -34,7 +34,7 @@ module cpu_tb;
 
     ram ram(
         .clk(cpu_clk),
-        .addr(addr),
+        .addr(addr[12:0]),
         .we(cpu_we),
         .do(cpu_di),
         .di(cpu_do)

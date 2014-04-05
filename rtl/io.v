@@ -1,4 +1,4 @@
-`include "mem_map.v"
+`include "constants.v"
 
 module io(
     input clk,
