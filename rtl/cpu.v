@@ -24,7 +24,7 @@ module cpu(
 
     reg [8:0] state = FETCH_0;
 
-    always @(posedge clk, posedge rst) begin
+    always @(posedge clk) begin
         if (rst) begin
             state <= FETCH_0;
         end else begin
@@ -33,8 +33,7 @@ module cpu(
                 FETCH_1: state <= FETCH_2;
                 FETCH_2: state <= FETCH_3;
                 FETCH_3: state <= FETCH_4;
-                FETCH_4: state <= FETCH_5;
-                FETCH_5: state <= DECODE;
+                FETCH_4: state <= DECODE;
                 DECODE:  state <= EXECUTE;
                 EXECUTE: state <= STORE;
                 STORE:   state <= FETCH_0;
@@ -64,22 +63,37 @@ module cpu(
     assign addr = get_data ? d_addr : i_addr;
     assign we = (op_code == ST) && (state == EXECUTE);
 
-    always @(posedge clk, posedge rst) begin
+
+    always @(posedge clk) begin
+        if (rst) begin
+            i_addr <= 0;
+        end else begin
+            case (state)
+                STORE:   i_addr <= PC + 0;
+                FETCH_0: i_addr <= PC + 1;
+                FETCH_1: i_addr <= PC + 2;
+                FETCH_2: i_addr <= PC + 3;
+            endcase
+        end
+    end
+
+    always @(posedge clk) begin
         if (rst) begin
             PC <= 0;
             IR <= 0;
         end else begin
-            i_addr <= PC + 1;
             case (state)
-                FETCH_0: get_data <= 0;
+
                 FETCH_1: IR[31:24] <= di;
                 FETCH_2: IR[23:16] <= di;
                 FETCH_3: IR[15:8]  <= di;
                 FETCH_4: IR[7:0]   <= di;
-                FETCH_5: get_data <= 1;
 
                 DECODE: begin
-
+                    get_data <= 1;
+                    if (op_code != HALT) begin
+                        PC <= PC + 4;
+                    end
                 end
 
                 EXECUTE: begin
@@ -102,10 +116,7 @@ module cpu(
                 end
 
                 STORE: begin
-
-                    if (op_code != HALT) begin
-                        PC <= PC + 4;
-                    end
+                    get_data <= 0;
                 end
             endcase
         end
@@ -116,23 +127,40 @@ module cpu(
         if (rst) begin
             $display("[cpu] In reset");
         end else begin
-            case (op_code)
-                HALT: $display("[cpu] op_code: HALT");
-                LD:   $display("[cpu] op_code: LD");
-                ST:   $display("[cpu] op_code: ST");
-                LDI:  $display("[cpu] op_code: LDI");
-                MOV:  $display("[cpu] op_code: MOV");
-                ADD:  $display("[cpu] op_code: ADD");
-                SUB:  $display("[cpu] op_code: SUB");
-                AND:  $display("[cpu] op_code: AND");
-                OR:   $display("[cpu] op_code: OR");
-                XOR:  $display("[cpu] op_code: XOR");
-                ROTL: $display("[cpu] op_code: ROTL");
-                ROTR: $display("[cpu] op_code: ROTR");
-                JMP:  $display("[cpu] op_code: JMP");
-                default: $display("[cpu] ERROR: Invalid op_code: %b", op_code);
+            if (state == DECODE) begin
+                case (op_code)
+                    HALT: $display("[cpu] PC: %d IR: %b op_code: HALT" , PC, IR);
+                    LD:   $display("[cpu] PC: %d IR: %b op_code: LD"   , PC, IR);
+                    ST:   $display("[cpu] PC: %d IR: %b op_code: ST"   , PC, IR);
+                    LDI:  $display("[cpu] PC: %d IR: %b op_code: LDI"  , PC, IR);
+                    MOV:  $display("[cpu] PC: %d IR: %b op_code: MOV"  , PC, IR);
+                    ADD:  $display("[cpu] PC: %d IR: %b op_code: ADD"  , PC, IR);
+                    SUB:  $display("[cpu] PC: %d IR: %b op_code: SUB"  , PC, IR);
+                    AND:  $display("[cpu] PC: %d IR: %b op_code: AND"  , PC, IR);
+                    OR:   $display("[cpu] PC: %d IR: %b op_code: OR"   , PC, IR);
+                    XOR:  $display("[cpu] PC: %d IR: %b op_code: XOR"  , PC, IR);
+                    ROTL: $display("[cpu] PC: %d IR: %b op_code: ROTL" , PC, IR);
+                    ROTR: $display("[cpu] PC: %d IR: %b op_code: ROTR" , PC, IR);
+                    JMP:  $display("[cpu] PC: %d IR: %b op_code: JMP"  , PC, IR);
+                    default: $display("[cpu] ERROR: Invalid op_code: %b", op_code);
+                endcase
+            end
+        end
+    end
+
+    /*
+    always @(posedge clk) begin
+        if (rst == 0) begin
+            case (state)
+                //FETCH_0: $display("[cpu] [F0] PC: %d i_addr: %d di: %b", PC, i_addr, di);
+                FETCH_1: $display("[cpu] [F1] PC: %d i_addr: %d di: %b", PC, i_addr, di);
+                FETCH_2: $display("[cpu] [F2] PC: %d i_addr: %d di: %b", PC, i_addr, di);
+                FETCH_3: $display("[cpu] [F3] PC: %d i_addr: %d di: %b", PC, i_addr, di);
+                FETCH_4: $display("[cpu] [F4] PC: %d i_addr: %d di: %b", PC, i_addr, di);
             endcase
         end
     end
+    */
+
 
 endmodule

@@ -17,7 +17,7 @@ module cpu_tb;
     wire [15:0] addr;
     wire [7:0] cpu_di;
     wire [7:0] cpu_do;
-    wire [7:0] cpu_we;
+    wire       cpu_we;
 
     cpu cpu(
         .clk(cpu_clk),
@@ -40,11 +40,9 @@ module cpu_tb;
         .di(cpu_do)
     );
 
-    /*
     initial begin
-        $readmemh("test.rom", cpu_tb.ram.ram);
+        $readmemb("../assembler/test.rom", cpu_tb.ram.ram);
     end
-    */
 
     // ----------------------------------------------------
     //                      SIM
@@ -56,14 +54,19 @@ module cpu_tb;
     end
 
     initial begin
+
+        //$monitor("i_addr: %d", cpu_tb.cpu.i_addr);
+        //$monitor("ram addr: %x we: %x", addr, cpu_we);
+        /*
         $monitor("rst: %d | addr: %x | di: %x | do: %x | we: %x",
             rst, addr,
             cpu_di, cpu_do,
             cpu_we);
-        #100 rst = 0;
-        #100 rst = 1;
-        #100 rst = 0;
-        #10000;
+        */
+        #4 rst = 0;
+        #4 rst = 1;
+        #4 rst = 0;
+        #100;
         $finish;
     end
 
