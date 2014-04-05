@@ -41,7 +41,11 @@ if __name__ == "__main__":
         num_bytes += 1
 
     for line in asm_file:
+
         line = line.upper().strip()
+
+        if ';' in line:
+            line = line[:line.find(';')]
 
         if ":" in line:
             labels[line.replace(':','')] = num_bytes
