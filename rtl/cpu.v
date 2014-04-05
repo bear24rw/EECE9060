@@ -18,10 +18,11 @@ module cpu(
     parameter FETCH_3 = 3;
     parameter FETCH_4 = 4;
     parameter DECODE  = 5;
-    parameter EXECUTE = 6;
-    parameter STORE   = 7;
+    parameter FETCH_EX = 6;
+    parameter EXECUTE = 7;
+    parameter STORE   = 8;
 
-    reg [6:0] state = FETCH_0;
+    reg [7:0] state = FETCH_0;
 
     always @(posedge clk) begin
         if (rst) begin
@@ -33,7 +34,8 @@ module cpu(
                 FETCH_2: state <= FETCH_3;
                 FETCH_3: state <= FETCH_4;
                 FETCH_4: state <= DECODE;
-                DECODE:  state <= EXECUTE;
+                DECODE:  state <= FETCH_EX;
+                FETCH_EX:  state <= EXECUTE;
                 EXECUTE: state <= STORE;
                 STORE:   state <= FETCH_0;
             endcase
