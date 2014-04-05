@@ -17,7 +17,6 @@ module cpu(
     parameter FETCH_1 = 1;
     parameter FETCH_2 = 2;
     parameter FETCH_3 = 3;
-    parameter FETCH_4 = 4;
     parameter DECODE  = 5;
     parameter FETCH_EX = 6;
     parameter EXECUTE = 7;
@@ -33,8 +32,7 @@ module cpu(
                 FETCH_0: state <= FETCH_1;
                 FETCH_1: state <= FETCH_2;
                 FETCH_2: state <= FETCH_3;
-                FETCH_3: state <= FETCH_4;
-                FETCH_4: state <= DECODE;
+                FETCH_3: state <= DECODE;
                 DECODE:  state <= FETCH_EX;
                 FETCH_EX:  state <= EXECUTE;
                 EXECUTE: state <= STORE;
@@ -88,10 +86,10 @@ module cpu(
         end else begin
             case (state)
 
-                FETCH_1: IR[31:24] <= di;
-                FETCH_2: IR[23:16] <= di;
-                FETCH_3: IR[15:8]  <= di;
-                FETCH_4: IR[7:0]   <= di;
+                FETCH_0: IR[31:24] <= di;
+                FETCH_1: IR[23:16] <= di;
+                FETCH_2: IR[15:8]  <= di;
+                FETCH_3: IR[7:0]   <= di;
 
                 DECODE: begin
                     get_data <= 1;
@@ -163,7 +161,6 @@ module cpu(
                 FETCH_1: $display("[cpu] [F1] PC: %d i_addr: %d di: %b", PC, i_addr, di);
                 FETCH_2: $display("[cpu] [F2] PC: %d i_addr: %d di: %b", PC, i_addr, di);
                 FETCH_3: $display("[cpu] [F3] PC: %d i_addr: %d di: %b", PC, i_addr, di);
-                FETCH_4: $display("[cpu] [F4] PC: %d i_addr: %d di: %b", PC, i_addr, di);
             endcase
         end
     end

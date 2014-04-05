@@ -81,7 +81,7 @@ module top(
     wire [15:0] ram_cur_addr;
 
     ram ram(
-        .clk(ram_clk),
+        .clk(~ram_clk),
         .addr(ram_addr[12:0]),
         .we(ram_we),
         .do(ram_do),

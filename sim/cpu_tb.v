@@ -33,7 +33,7 @@ module cpu_tb;
     // ----------------------------------------------------
 
     ram ram(
-        .clk(cpu_clk),
+        .clk(~cpu_clk),
         .addr(addr[12:0]),
         .we(cpu_we),
         .do(cpu_di),
@@ -55,8 +55,8 @@ module cpu_tb;
 
     initial begin
 
-        $monitor("out: %d", cpu_tb.ram.ram[100]);
-        //$monitor("out: %d", cpu_tb.cpu.regs[2]);
+        //$monitor("out: %d", cpu_tb.ram.ram[3]);
+        $monitor("out: %d", cpu_tb.cpu.regs[2]);
         //$monitor("i_addr: %d", cpu_tb.cpu.i_addr);
         //$monitor("ram addr: %x we: %x", addr, cpu_we);
         /*
