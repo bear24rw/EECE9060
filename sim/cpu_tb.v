@@ -41,7 +41,7 @@ module cpu_tb;
     );
 
     initial begin
-        $readmemb("../assembler/test.rom", cpu_tb.ram.ram);
+        $readmemb("../assembler/fib.rom", cpu_tb.ram.ram);
     end
 
     // ----------------------------------------------------
@@ -55,6 +55,7 @@ module cpu_tb;
 
     initial begin
 
+        $monitor("out: %d", cpu_tb.cpu.regs[2]);
         //$monitor("i_addr: %d", cpu_tb.cpu.i_addr);
         //$monitor("ram addr: %x we: %x", addr, cpu_we);
         /*
@@ -66,7 +67,7 @@ module cpu_tb;
         #4 rst = 0;
         #4 rst = 1;
         #4 rst = 0;
-        #200;
+        #1000;
         $finish;
     end
 

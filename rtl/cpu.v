@@ -135,9 +135,11 @@ module cpu(
                     HALT: $display("[cpu] PC: %d IR: %b op_code: HALT" , PC, IR);
                     LD:   $display("[cpu] PC: %d IR: %b op_code: LD"   , PC, IR);
                     ST:   $display("[cpu] PC: %d IR: %b op_code: ST"   , PC, IR);
-                    LDI:  $display("[cpu] PC: %d IR: %b op_code: LDI"  , PC, IR);
+                    LDI:  $display("[cpu] PC: %d IR: %b op_code: LDI (r[%d] = %d", PC, IR, op_d, op_a);
+                    //LDI:  $display("[cpu] PC: %d IR: %b op_code: LDI"  , PC, IR);
                     MOV:  $display("[cpu] PC: %d IR: %b op_code: MOV"  , PC, IR);
-                    ADD:  $display("[cpu] PC: %d IR: %b op_code: ADD"  , PC, IR);
+                    //ADD:  $display("[cpu] PC: %d IR: %b op_code: ADD"  , PC, IR);
+                    ADD:  $display("[cpu] PC: %d IR: %b op_code: ADD (r[%d]: %d + r[%d]: %d"  , PC, IR, op_a, regs[op_a], op_b, regs[op_b]);
                     SUB:  $display("[cpu] PC: %d IR: %b op_code: SUB"  , PC, IR);
                     AND:  $display("[cpu] PC: %d IR: %b op_code: AND"  , PC, IR);
                     OR:   $display("[cpu] PC: %d IR: %b op_code: OR"   , PC, IR);

@@ -67,8 +67,8 @@ if __name__ == "__main__":
         if op in ('LDI', 'ST'):
             a, addr = args.split(',')
             write_byte(bits(a))
-            write_byte(bits(addr, 1))
             write_byte(bits(addr, 0))
+            write_byte(bits(0))
             continue
 
         if op in ('MOV'):
