@@ -66,7 +66,7 @@ module cpu_tb;
         #4 rst = 0;
         #4 rst = 1;
         #4 rst = 0;
-        #100;
+        #200;
         $finish;
     end
 

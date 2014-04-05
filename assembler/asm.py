@@ -33,6 +33,8 @@ if __name__ == "__main__":
 
     num_bytes = 0
 
+    labels = {}
+
     def write_byte(x):
         global num_bytes
         rom_file.write(x+'\n')
@@ -40,6 +42,10 @@ if __name__ == "__main__":
 
     for line in asm_file:
         line = line.upper().strip()
+
+        if ":" in line:
+            labels[line.replace(':','')] = num_bytes
+            continue
 
         if line == 'HALT':
             write_byte(bits(op_codes[line]))
@@ -53,8 +59,8 @@ if __name__ == "__main__":
         write_byte(bits(op_codes[op]))
 
         if op in ('JMP'):
-            write_byte(bits(args, 1))
-            write_byte(bits(args, 0))
+            write_byte(bits(labels[args], 1))
+            write_byte(bits(labels[args], 0))
             write_byte(bits(0))
             continue
 

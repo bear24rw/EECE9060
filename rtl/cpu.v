@@ -56,6 +56,7 @@ module cpu(
     wire [7:0]  op_b    = IR[15:8];
     wire [7:0]  op_d    = IR[7:0];
     wire [15:0] d_addr  = IR[15:0];
+    wire [15:0] jmp_addr = IR[23:8];
 
     reg [15:0] i_addr = 'b0;
     reg get_data = 'b0;
@@ -110,6 +111,8 @@ module cpu(
                         XOR:  regs[op_d] <= regs[op_a] ^ regs[op_b];
                         ROTL: regs[op_d] <= regs[op_a] << regs[op_b];
                         ROTR: regs[op_d] <= regs[op_a] >> regs[op_b];
+
+                        JMP:  PC <= jmp_addr;
 
                     endcase
 
