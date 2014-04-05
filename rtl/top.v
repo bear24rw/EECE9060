@@ -16,7 +16,13 @@ module top(
     output UART_TXD
 );
 
+`ifdef SIMULATION
     wire cpu_clk = CLOCK_50;
+`else
+    wire cpu_clk;
+    clk_div clk_div(CLOCK_50, cpu_clk);
+`endif
+
     wire rst = KEY[0];
 
     wire [15:0] addr;

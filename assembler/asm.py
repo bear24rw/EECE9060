@@ -53,6 +53,7 @@ if __name__ == "__main__":
 
         if ';' in line:
             line = line[:line.find(';')]
+            continue
 
         if ":" in line:
             labels[line.replace(':','')] = num_bytes

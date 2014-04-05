@@ -10,6 +10,7 @@ ASSIGNMENT_FILES = top.qpf top.qsf
 SIM_TB = cpu_tb
 
 SRC = \
+	../rtl/clk_div.v \
 	../rtl/constants.v \
 	../rtl/cpu.v \
 	../rtl/io.v \
@@ -74,7 +75,7 @@ $(SIM_TB).vvp: $(SRC) $(SIM_SRC)
 	@for i in `echo $^`; do \
 	    echo $$i >> $@.list; \
 	done
-	$(IVERILOG) -Wall -o $@ $(VINCDIR) -c $@.list -s $(@:.vvp=)
+	$(IVERILOG) -Wall -DSIMULATION -o $@ $(VINCDIR) -c $@.list -s $(@:.vvp=)
 
 %.vcd: %.vvp
 	$(VVP) $<

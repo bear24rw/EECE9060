@@ -30,4 +30,6 @@ module ram(
     // blocks in single port mode
     assign do = ram[addr_reg];
 
+    $readmemb("../assembler/fib.rom", ram);
+
 endmodule
