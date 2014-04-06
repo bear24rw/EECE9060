@@ -38,14 +38,13 @@ if __name__ == "__main__":
     txt_file = open(txt_filename, 'w')
 
     num_bytes = 0
-    filling = False
 
     labels = {}
 
     def write_byte(x):
         global num_bytes
         txt_file.write(x+'\n')
-        if not filling: rom_file.write(chr(eval('0b'+x)))
+        rom_file.write(chr(eval('0b'+x)))
         num_bytes += 1
 
     for _ in range(reset_vector):
@@ -105,8 +104,6 @@ if __name__ == "__main__":
         write_byte(bits(d))
         write_byte(bits(a))
         write_byte(bits(b))
-
-    filling = True
 
     for _ in range(ram_size - num_bytes):
         write_byte(bits(0))

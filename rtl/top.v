@@ -20,16 +20,13 @@ module top(
     wire cpu_clk = CLOCK_50;
 `else
     wire cpu_clk;
-    clk_div #(.COUNT(10000)) clk_div(CLOCK_50, cpu_clk);
+    //clk_div #(.COUNT(10000)) clk_div(CLOCK_50, cpu_clk);
+    clk_div #(.COUNT(100000)) clk_div(CLOCK_50, cpu_clk);
 `endif
 
-    reg rst = 0;
-    reg boot_en = 0;
-
-    always @(posedge cpu_clk) begin
-        rst <= SW[9];
-        boot_en <= SW[8];
-    end
+    wire boot_rst;
+    wire cpu_rst;
+    wire booting;
 
     wire [15:0] cpu_addr;
     wire       cpu_we;
@@ -55,7 +52,7 @@ module top(
 
     cpu cpu(
         .clk(cpu_clk),
-        .rst(rst),
+        .rst(cpu_rst),
         .addr(cpu_addr),
         .di(cpu_di),
         .do(cpu_do),
@@ -70,14 +67,13 @@ module top(
         .ram_do(ram_do),
         .io_di(io_di),
         .io_do(io_do),
-        .boot_en(boot_en),
+        .booting(booting),
         .boot_data(boot_data)
     );
 
-    wire ram_we = boot_en ? 1 : cpu_we;
-    wire [15:0] ram_addr = boot_en ? boot_addr : cpu_addr;
-    //wire [15:0] ram_addr = boot_en ? boot_addr : SW;
-    wire ram_clk = boot_en ? CLOCK_50 : cpu_clk;
+    wire ram_clk = booting ? CLOCK_50 : cpu_clk;
+    wire ram_we  = booting ? 1        : cpu_we;
+    wire [15:0] ram_addr = booting ? boot_addr : cpu_addr;
     wire [15:0] ram_cur_addr;
 
     ram ram(
@@ -91,7 +87,7 @@ module top(
 
     io io(
         .clk(cpu_clk),
-        .rst(rst),
+        .rst(cpu_rst),
 
         .addr(cpu_addr),
         .we(cpu_we),
@@ -101,7 +97,7 @@ module top(
         .switches(SW),
         .keys(KEY),
         .ledr(LEDR),
-        .ledg(LEDG),
+        //.ledg(LEDG),
         .seg0(seg0),
         .seg1(seg1),
         .seg2(seg2),
@@ -113,12 +109,14 @@ module top(
         .uart_transmit(uart_transmit),
         .boot_tx_data(boot_tx_data),
         .boot_transmit(boot_transmit),
-        .boot_en(boot_en)
+        .booting(booting)
     );
+
+    wire uart_rst = booting ? boot_rst : cpu_rst;
 
     uart uart(
         .sys_clk(CLOCK_50),
-        .sys_rst(rst),
+        .sys_rst(uart_rst),
         .uart_rx(UART_RXD),
         .uart_tx(UART_TXD),
         .divisor(50000000/115200/16),
@@ -140,14 +138,21 @@ module top(
 
     bootloader bootloader(
         .clk(CLOCK_50),
-        .rst(rst),
         .rx_data(uart_rx_data),
         .tx_data(boot_tx_data),
         .rx_done(uart_rx_done),
         .tx_done(uart_tx_done),
         .transmit(boot_transmit),
         .ram_addr(boot_addr),
-        .ram_data(boot_data)
+        .ram_data(boot_data),
+        .trigger(~KEY[0]),
+        .booting(booting),
+        .cpu_rst(cpu_rst),
+        .boot_rst(boot_rst)
     );
+
+    assign LEDG[0] = booting;
+    assign LEDG[1] = boot_rst;
+    assign LEDG[2] = cpu_rst;
 
 endmodule

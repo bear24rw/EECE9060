@@ -28,14 +28,14 @@ module io(
 
     input      [7:0] boot_tx_data,
     input            boot_transmit,
-    input            boot_en
+    input            booting
 );
 
     reg [7:0] uart_control = 0;
     reg [7:0] tx_data = 0;
 
-    assign uart_transmit = boot_en ? boot_transmit : uart_control[2];
-    assign uart_txd_data  = boot_en ? boot_tx_data  : tx_data;
+    assign uart_transmit = booting ? boot_transmit : uart_control[2];
+    assign uart_txd_data = booting ? boot_tx_data  : tx_data;
 
     always @(posedge clk, posedge rst) begin
         if (rst) begin

@@ -1,6 +1,5 @@
 module bootloader(
     input clk,
-    input rst,
 
     input      [7:0]  rx_data,
     output reg [7:0]  tx_data,
@@ -9,8 +8,72 @@ module bootloader(
     output reg        transmit,
 
     output reg [15:0] ram_addr,
-    output reg  [7:0] ram_data
+    output reg  [7:0] ram_data,
+
+    input             trigger,
+    output reg        booting,
+    output reg        cpu_rst,
+    output reg        boot_rst
 );
+
+    initial booting = 1;
+
+    // ----------------------------------------------------
+    //              RESET STATE MACHINE
+    // ----------------------------------------------------
+
+    // wait for the boot process to trigger then put the cpu
+    // in reset, then reset the boot state machine, then wait
+    // for the boot state machine to indicate we are finished
+    // booting and then take the cpu out of reset
+
+    `define S_WAIT_FOR_TRIGGER  0
+    `define S_BOOT_RESET_START  1
+    `define S_BOOT_RESET_END    2
+    `define S_WAIT_FOR_DONE     3
+    `define S_CPU_RESET_START   4
+    `define S_CPU_RESET_END     5
+
+    reg [3:0] rst_state = `S_BOOT_RESET_START;
+
+    reg done = 0;   // flag to indicate we are done booting
+
+    always @(posedge clk) begin
+        if (trigger) begin
+            booting <= 1;
+            rst_state <= `S_BOOT_RESET_START;
+        end else begin
+            case (rst_state)
+
+                `S_BOOT_RESET_START: begin
+                    boot_rst <= 1;
+                    rst_state <= `S_BOOT_RESET_END;
+                end
+
+                `S_BOOT_RESET_END: begin
+                    boot_rst <= 0;
+                    rst_state <= `S_WAIT_FOR_DONE;
+                end
+
+                `S_WAIT_FOR_DONE: begin
+                    if (done) begin
+                        booting <= 0;
+                        rst_state <= `S_WAIT_FOR_TRIGGER;
+                    end
+                end
+
+                `S_CPU_RESET_START: begin
+                    cpu_rst <= 1;
+                    rst_state <= `S_CPU_RESET_END;
+                end
+
+                `S_CPU_RESET_END: begin
+                    cpu_rst <= 0;
+                end
+            endcase
+        end
+    end
+
 
     // the receive line only goes high for one clock
     // cycle so we need to latch it. if we are currently
@@ -18,8 +81,8 @@ module bootloader(
 
     reg new_byte = 0;
 
-    always @(posedge rst, posedge transmit, posedge rx_done) begin
-        if (rst)
+    always @(posedge boot_rst, posedge transmit, posedge rx_done) begin
+        if (boot_rst)
             new_byte <= 0;
         else if (transmit)
             new_byte <= 0;
@@ -33,8 +96,8 @@ module bootloader(
 
     reg tx_done_latched = 0;
 
-    always @(posedge rst, posedge transmit, posedge tx_done) begin
-        if (rst)
+    always @(posedge boot_rst, posedge transmit, posedge tx_done) begin
+        if (boot_rst)
             tx_done_latched <= 0;
         else if (transmit)
             tx_done_latched <= 0;
@@ -43,58 +106,55 @@ module bootloader(
     end
 
     // ----------------------------------------------------
-    //                 STATE MACHINE
+    //              ROM LOADING STATE MACHINE
     // ----------------------------------------------------
 
-    `define S_REQUEST    1    // request next data byte from uart
-    `define S_RECV       2    // wait for data byte
-    `define S_WRITE      3    // write data to RAM
-    `define S_WRITE_WAIT 4    // write data to RAM
+    `define S_RECV       3    // wait for data byte
+    `define S_SEND       2    // request next data byte from uart
+    `define S_WRITE      4    // write data to RAM
+    `define S_WRITE_WAIT 5    // write data to RAM
+    `define S_IDLE       1
 
-    reg [3:0] state = 0;
+    reg [3:0] state = `S_IDLE;
 
     always @(posedge clk) begin
-        if (rst) begin
+        if (boot_rst) begin
             tx_data <= 0;
             transmit <= 0;
-            state <= `S_REQUEST;
+            state <= `S_RECV;
             ram_addr <= 0;
+            done <= 0;
         end else begin
             case (state)
-                // we want to request the next byte.
-                // trigger the uart to transmit and
-                // then go to RECV state to wait for
-                // the data
-                `S_REQUEST: begin
-                    transmit <= 1;
-                    state <= `S_RECV;
-                end
 
-                // clear the transmit flag so we only
-                // transmit one byte. check to see if
-                // we recieved a new byte
                 `S_RECV: begin
-                    transmit <= 0;
-
                     // if we got a new byte, send it back to ACK.
-                    // go to WRITE to put it in flash
                     if (new_byte) begin
                         tx_data <= rx_data;
                         ram_data <= rx_data;
+                        transmit <= 1;
+                        state <= `S_SEND;
+                    end
+                end
+
+                `S_SEND: begin
+                    transmit <= 0;
+                    if (tx_done_latched) begin
                         state <= `S_WRITE;
                     end
                 end
 
-                `S_WRITE: begin
-                    ram_addr <= ram_addr + 1;
-                    state <= `S_WRITE_WAIT;
-                end
 
-                `S_WRITE_WAIT: begin
-                    if (tx_done_latched) begin
-                        state <= `S_REQUEST;
+                `S_WRITE: begin
+                    if (ram_addr == 'h2000-1) begin
+                        done <= 1;
+                        state <= `S_IDLE;
+                    end else begin
+                        ram_addr <= ram_addr + 1;
+                        state <= `S_RECV;
                     end
                 end
+
             endcase
         end
     end
