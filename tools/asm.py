@@ -2,11 +2,10 @@ import sys
 import constants
 
 def bits(number, byte_num=0):
-    byte_num += 1
     number = int(number)
-    s = bin(number)[2:]
-    s = s.zfill(8*byte_num)
-    return s[-8*byte_num:len(s)-8*byte_num+8]
+    number = number >> (8*byte_num)
+    s = bin(number)[2:].zfill(8)[-8:]
+    return s
 
 if __name__ == "__main__":
 
