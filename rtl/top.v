@@ -87,6 +87,9 @@ module top(
         .cur_addr(ram_cur_addr)
     );
 
+    wire [7:0] io_ledr;
+    wire [7:0] io_ledg;
+
     io io(
         .clk(cpu_clk),
         .rst(cpu_rst),
@@ -98,8 +101,8 @@ module top(
 
         .switches(SW),
         .keys(KEY),
-        .ledr(LEDR),
-        //.ledg(LEDG),
+        .ledr(io_ledr),
+        .ledg(io_ledg),
         .seg0(seg0),
         .seg1(seg1),
         .seg2(seg2),
@@ -153,8 +156,8 @@ module top(
         .boot_rst(boot_rst)
     );
 
-    assign LEDG[0] = booting;
-    assign LEDG[1] = boot_rst;
-    assign LEDG[2] = cpu_rst;
+    assign LEDR[9]   = booting;
+    assign LEDR[7:0] = io_ledr;
+    assign LEDG      = io_ledg;
 
 endmodule

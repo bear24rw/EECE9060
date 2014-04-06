@@ -38,11 +38,10 @@ if __name__ == "__main__":
 
         line = line.upper().strip()
 
-        if len(line) == 0: continue
-
         if ';' in line:
             line = line[:line.find(';')]
-            continue
+
+        if len(line) == 0: continue
 
         if ":" in line:
             labels[line.replace(':','')] = len(bytes)
@@ -72,9 +71,16 @@ if __name__ == "__main__":
             if arg in constants.address_names:
                 args[i] = constants.address_names[arg]
 
+        if op in ('BRZ', 'BRNZ'):
+            jumps.append({'addr': len(bytes)+1, 'label': args[1]})
+            bytes.append(int(args[0]))
+            bytes.append(0)
+            bytes.append(0)
+            continue
+
         args = [int(x) for x in args]
 
-        if op in ('LD', 'ST'):
+        if op in ('LD', 'ST', 'BRZ', 'BRNZ'):
             d, addr = args
             bytes.append(d)
             bytes.append(h_byte(addr))
@@ -92,6 +98,12 @@ if __name__ == "__main__":
             d, a = args
             bytes.append(d)
             bytes.append(a)
+            bytes.append(0)
+            continue
+
+        if op in ('INC', 'DEC'):
+            bytes.append(args[0])
+            bytes.append(0)
             bytes.append(0)
             continue
 
