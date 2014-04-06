@@ -29,12 +29,11 @@ module bootloader(
     // for the boot state machine to indicate we are finished
     // booting and then take the cpu out of reset
 
-    `define S_WAIT_FOR_TRIGGER  0
-    `define S_BOOT_RESET_START  1
-    `define S_BOOT_RESET_END    2
-    `define S_WAIT_FOR_DONE     3
-    `define S_CPU_RESET_START   4
-    `define S_CPU_RESET_END     5
+    `define S_BOOT_RESET_START  0
+    `define S_BOOT_RESET_END    1
+    `define S_WAIT_FOR_DONE     2
+    `define S_CPU_RESET_START   3
+    `define S_CPU_RESET_END     4
 
     reg [3:0] rst_state = `S_BOOT_RESET_START;
 
