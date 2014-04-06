@@ -58,7 +58,13 @@ if __name__ == "__main__":
             bytes.append(0)
             continue
 
-        args = [int(x) for x in args.split(",")]
+        args = [x.strip() for x in args.split(",")]
+
+        for i, arg in enumerate(args):
+            if arg in constants.address_names:
+                args[i] = constants.address_names[arg]
+
+        args = [int(x) for x in args]
 
         if op in ('LD', 'ST'):
             d, addr = args

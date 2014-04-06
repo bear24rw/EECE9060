@@ -1,6 +1,7 @@
 op_codes = {}
 reset_vector = 0
 ram_size = 0
+address_names = {}
 
 vfile = open("../rtl/constants.v")
 
@@ -17,9 +18,17 @@ for line in vfile:
         op_codes[name] = value
         continue
 
+    if name.startswith("ADDR_"):
+        name = name.replace("ADDR_", "")
+        address_names[name] = value
+        continue
+
     if name == "RESET_VECTOR":
         reset_vector = value
         continue
 
     if name == "RAM_ADDR_BITS":
         ram_size = 2**value
+        continue
+
+
