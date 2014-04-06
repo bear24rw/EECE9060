@@ -41,7 +41,8 @@ module cpu_tb;
     );
 
     initial begin
-        $readmemb("../assembler/fib.txt", cpu_tb.ram.ram);
+        $readmemb("../tools/shift.txt", cpu_tb.ram.ram);
+        //$readmemb("../tools/count.txt", cpu_tb.ram.ram);
     end
 
     // ----------------------------------------------------
@@ -55,8 +56,20 @@ module cpu_tb;
 
     initial begin
 
-        //$monitor("out: %d", cpu_tb.ram.ram[3]);
-        $monitor("out: %d", cpu_tb.cpu.regs[2]);
+
+        $monitor("LEDR: %b LEDG: %b",
+            cpu_tb.ram.ram[2],
+            cpu_tb.ram.ram[3]
+        );
+
+        /*
+        $monitor("R[0]: %b R[1]: %b R[2]: %b",
+            cpu_tb.cpu.regs[0],
+            cpu_tb.cpu.regs[1],
+            cpu_tb.cpu.regs[2]
+        );
+        */
+
         //$monitor("i_addr: %d", cpu_tb.cpu.i_addr);
         //$monitor("ram addr: %x we: %x", addr, cpu_we);
         /*
