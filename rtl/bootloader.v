@@ -81,12 +81,12 @@ module bootloader(
 
     reg new_byte = 0;
 
-    always @(posedge boot_rst, posedge transmit, posedge rx_done) begin
+    always @(posedge clk) begin
         if (boot_rst)
             new_byte <= 0;
         else if (transmit)
             new_byte <= 0;
-        else
+        else if (rx_done)
             new_byte <= 1;
     end
 
@@ -96,12 +96,12 @@ module bootloader(
 
     reg tx_done_latched = 0;
 
-    always @(posedge boot_rst, posedge transmit, posedge tx_done) begin
+    always @(posedge clk) begin
         if (boot_rst)
             tx_done_latched <= 0;
         else if (transmit)
             tx_done_latched <= 0;
-        else
+        else if (tx_done)
             tx_done_latched <= 1;
     end
 
