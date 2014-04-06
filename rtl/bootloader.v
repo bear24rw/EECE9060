@@ -43,6 +43,8 @@ module bootloader(
     always @(posedge clk) begin
         if (trigger) begin
             booting <= 1;
+            boot_rst <= 0;
+            cpu_rst <= 0;
             rst_state <= `S_BOOT_RESET_START;
         end else begin
             case (rst_state)
@@ -60,7 +62,7 @@ module bootloader(
                 `S_WAIT_FOR_DONE: begin
                     if (done) begin
                         booting <= 0;
-                        rst_state <= `S_WAIT_FOR_TRIGGER;
+                        rst_state <= `S_CPU_RESET_START;
                     end
                 end
 

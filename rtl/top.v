@@ -24,6 +24,7 @@ module top(
     wire cpu_clk;
     //clk_div #(.COUNT(10000)) clk_div(CLOCK_50, cpu_clk);
     clk_div #(.COUNT(100000)) clk_div(CLOCK_50, cpu_clk);
+    //clk_div #(.COUNT(10000000)) clk_div(CLOCK_50, cpu_clk);
 `endif
 
     wire boot_rst;

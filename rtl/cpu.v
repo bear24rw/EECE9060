@@ -23,9 +23,9 @@ module cpu(
 
     reg [7:0] state = FETCH_0;
 
-    always @(posedge clk) begin
+    always @(posedge clk, posedge rst) begin
         if (rst) begin
-            state <= FETCH_0;
+            state <= STORE;
         end else begin
             case (state)
                 FETCH_0: state <= FETCH_1;
@@ -64,7 +64,7 @@ module cpu(
     assign we = (op_code == `OP_ST) && (state == STORE);
 
 
-    always @(posedge clk) begin
+    always @(posedge clk, posedge rst) begin
         if (rst) begin
             i_addr <= `RESET_VECTOR;
         end else begin
@@ -77,11 +77,12 @@ module cpu(
         end
     end
 
-    always @(posedge clk) begin
+    always @(posedge clk, posedge rst) begin
         if (rst) begin
             PC <= `RESET_VECTOR;
             IR <= 0;
             do <= 0;
+            get_data <= 0;
         end else begin
             case (state)
 
