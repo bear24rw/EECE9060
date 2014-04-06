@@ -1,3 +1,5 @@
+`include "constants.v"
+
 module top(
     input CLOCK_50,
 
@@ -78,7 +80,7 @@ module top(
 
     ram ram(
         .clk(~ram_clk),
-        .addr(ram_addr[12:0]),
+        .addr(ram_addr[`RAM_ADDR_BITS-1:0]),
         .we(ram_we),
         .do(ram_do),
         .di(ram_di),

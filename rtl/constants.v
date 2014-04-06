@@ -25,3 +25,5 @@
 `define ROTL  'd10
 `define ROTR  'd11
 `define JMP   'd12
+
+`define RAM_ADDR_BITS   13

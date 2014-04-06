@@ -1,3 +1,5 @@
+`include "constants.v"
+
 module bootloader(
     input clk,
 
@@ -114,7 +116,7 @@ module bootloader(
                 end
 
                 `S_WRITE: begin
-                    if (ram_addr == 'h2000-1) begin
+                    if (ram_addr == (2**`RAM_ADDR_BITS)-1) begin
                         done <= 1;
                         state <= `S_IDLE;
                     end else begin
