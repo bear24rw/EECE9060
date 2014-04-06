@@ -74,37 +74,6 @@ module bootloader(
         end
     end
 
-
-    // the receive line only goes high for one clock
-    // cycle so we need to latch it. if we are currently
-    // transmitting we obviously don't have a new byte yet
-
-    reg new_byte = 0;
-
-    always @(posedge clk) begin
-        if (boot_rst)
-            new_byte <= 0;
-        else if (transmit)
-            new_byte <= 0;
-        else if (rx_done)
-            new_byte <= 1;
-    end
-
-    // the tx_done line only goes high for one clock
-    // cycle so we need to latch it. if we are currently
-    // transmitting we obviously haven't finished sending it
-
-    reg tx_done_latched = 0;
-
-    always @(posedge clk) begin
-        if (boot_rst)
-            tx_done_latched <= 0;
-        else if (transmit)
-            tx_done_latched <= 0;
-        else if (tx_done)
-            tx_done_latched <= 1;
-    end
-
     // ----------------------------------------------------
     //              ROM LOADING STATE MACHINE
     // ----------------------------------------------------
@@ -129,7 +98,7 @@ module bootloader(
 
                 `S_RECV: begin
                     // if we got a new byte, send it back to ACK.
-                    if (new_byte) begin
+                    if (rx_done) begin
                         tx_data <= rx_data;
                         ram_data <= rx_data;
                         transmit <= 1;
@@ -139,11 +108,10 @@ module bootloader(
 
                 `S_SEND: begin
                     transmit <= 0;
-                    if (tx_done_latched) begin
+                    if (tx_done) begin
                         state <= `S_WRITE;
                     end
                 end
-
 
                 `S_WRITE: begin
                     if (ram_addr == 'h2000-1) begin
