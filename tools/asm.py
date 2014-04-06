@@ -4,6 +4,12 @@ import constants
 def bits(number):
     return bin(number)[2:].zfill(8)
 
+def h_byte(x):
+    return x >> 8
+
+def l_byte (x):
+    return x & 0x00FF
+
 if __name__ == "__main__":
 
     asm_filename = sys.argv[1]
@@ -17,6 +23,7 @@ if __name__ == "__main__":
     bytes = []
 
     labels = {}
+    jumps = []
 
     for _ in range(constants.reset_vector):
         bytes.append(0)
@@ -45,8 +52,9 @@ if __name__ == "__main__":
         bytes.append(constants.op_codes[op])
 
         if op in ('JMP'):
-            bytes.append(labels[args] >> 8)
-            bytes.append(labels[args])
+            jumps.append({'addr': len(bytes), 'label': args})
+            bytes.append(0)
+            bytes.append(0)
             bytes.append(0)
             continue
 
@@ -55,8 +63,8 @@ if __name__ == "__main__":
         if op in ('LD', 'ST'):
             d, addr = args
             bytes.append(d)
-            bytes.append(addr >> 8)
-            bytes.append(addr)
+            bytes.append(h_byte(addr))
+            bytes.append(l_byte(addr))
             continue
 
         if op in ('LDI'):
@@ -80,6 +88,13 @@ if __name__ == "__main__":
 
     for _ in range(constants.ram_size - len(bytes)):
         bytes.append(0)
+
+    #
+    # Go through all the jump instructions and fill out the address
+    #
+    for jump in jumps:
+        bytes[jump['addr']+0] = h_byte(labels[jump['label']])
+        bytes[jump['addr']+1] = l_byte(labels[jump['label']])
 
     #
     # Write all bytes out
