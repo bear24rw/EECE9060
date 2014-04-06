@@ -1,24 +1,5 @@
 import sys
-
-op_codes = {
-    'HALT': 0,
-    'LD': 1,
-    'ST': 2,
-    'LDI': 3,
-    'MOV': 4,
-    'ADD': 5,
-    'SUB': 6,
-    'AND': 7,
-    'OR': 8,
-    'XOR': 9,
-    'ROTL': 10,
-    'ROTR': 11,
-    'JMP': 12,
-}
-
-reset_vector = 20
-
-ram_size = 2**13
+import constants
 
 def bits(number, byte_num=0):
     byte_num += 1
@@ -47,7 +28,7 @@ if __name__ == "__main__":
         rom_file.write(chr(eval('0b'+x)))
         num_bytes += 1
 
-    for _ in range(reset_vector):
+    for _ in range(constants.reset_vector):
         write_byte(bits(0))
 
     for line in asm_file:
@@ -63,7 +44,7 @@ if __name__ == "__main__":
             continue
 
         if line == 'HALT':
-            write_byte(bits(op_codes[line]))
+            write_byte(bits(constants.op_codes[line]))
             write_byte(bits(0))
             write_byte(bits(0))
             write_byte(bits(0))
@@ -71,7 +52,7 @@ if __name__ == "__main__":
 
         op, args = line.split()
 
-        write_byte(bits(op_codes[op]))
+        write_byte(bits(constants.op_codes[op]))
 
         if op in ('JMP'):
             write_byte(bits(labels[args], 1))
@@ -105,5 +86,5 @@ if __name__ == "__main__":
         write_byte(bits(a))
         write_byte(bits(b))
 
-    for _ in range(ram_size - num_bytes):
+    for _ in range(constants.ram_size - num_bytes):
         write_byte(bits(0))

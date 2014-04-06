@@ -60,7 +60,7 @@ module cpu(
     reg get_data = 'b0;
 
     assign addr = get_data ? d_addr : i_addr;
-    assign we = (op_code == `ST) && (state == STORE);
+    assign we = (op_code == `OP_ST) && (state == STORE);
 
 
     always @(posedge clk) begin
@@ -91,27 +91,27 @@ module cpu(
 
                 DECODE: begin
                     get_data <= 1;
-                    if (op_code != `HALT) begin
+                    if (op_code != `OP_HALT) begin
                         PC <= PC + 4;
                     end
                 end
 
                 EXECUTE: begin
                     case (op_code)
-                        `ST:   do <= regs[op_d];
-                        `LD:   regs[op_d] <= di;
-                        `LDI:  regs[op_d] <= op_a;
-                        `MOV:  regs[op_d] <= regs[op_a];
+                        `OP_ST:   do <= regs[op_d];
+                        `OP_LD:   regs[op_d] <= di;
+                        `OP_LDI:  regs[op_d] <= op_a;
+                        `OP_MOV:  regs[op_d] <= regs[op_a];
 
-                        `ADD:  regs[op_d] <= regs[op_a] + regs[op_b];
-                        `SUB:  regs[op_d] <= regs[op_a] - regs[op_b];
-                        `AND:  regs[op_d] <= regs[op_a] & regs[op_b];
-                        `OR:   regs[op_d] <= regs[op_a] | regs[op_b];
-                        `XOR:  regs[op_d] <= regs[op_a] ^ regs[op_b];
-                        `ROTL: regs[op_d] <= regs[op_a] << regs[op_b];
-                        `ROTR: regs[op_d] <= regs[op_a] >> regs[op_b];
+                        `OP_ADD:  regs[op_d] <= regs[op_a] + regs[op_b];
+                        `OP_SUB:  regs[op_d] <= regs[op_a] - regs[op_b];
+                        `OP_AND:  regs[op_d] <= regs[op_a] & regs[op_b];
+                        `OP_OR:   regs[op_d] <= regs[op_a] | regs[op_b];
+                        `OP_XOR:  regs[op_d] <= regs[op_a] ^ regs[op_b];
+                        `OP_ROTL: regs[op_d] <= regs[op_a] << regs[op_b];
+                        `OP_ROTR: regs[op_d] <= regs[op_a] >> regs[op_b];
 
-                        `JMP:  PC <= jmp_addr;
+                        `OP_JMP:  PC <= jmp_addr;
                     endcase
 
                 end
@@ -131,19 +131,19 @@ module cpu(
         end else begin
             if (state == DECODE) begin
                 case (op_code)
-                    HALT: $display("[cpu] PC: %d IR: %b op_code: HALT" , PC, IR);
-                    LD:   $display("[cpu] PC: %d IR: %b op_code: LD"   , PC, IR);
-                    ST:   $display("[cpu] PC: %d IR: %b op_code: ST (%d = r[%d])", PC, IR, d_addr, op_d);
-                    LDI:  $display("[cpu] PC: %d IR: %b op_code: LDI (r[%d] = %d", PC, IR, op_d, op_a);
-                    MOV:  $display("[cpu] PC: %d IR: %b op_code: MOV"  , PC, IR);
-                    ADD:  $display("[cpu] PC: %d IR: %b op_code: ADD (r[%d]: %d + r[%d]: %d"  , PC, IR, op_a, regs[op_a], op_b, regs[op_b]);
-                    SUB:  $display("[cpu] PC: %d IR: %b op_code: SUB"  , PC, IR);
-                    AND:  $display("[cpu] PC: %d IR: %b op_code: AND"  , PC, IR);
-                    OR:   $display("[cpu] PC: %d IR: %b op_code: OR"   , PC, IR);
-                    XOR:  $display("[cpu] PC: %d IR: %b op_code: XOR"  , PC, IR);
-                    ROTL: $display("[cpu] PC: %d IR: %b op_code: ROTL" , PC, IR);
-                    ROTR: $display("[cpu] PC: %d IR: %b op_code: ROTR" , PC, IR);
-                    JMP:  $display("[cpu] PC: %d IR: %b op_code: JMP"  , PC, IR);
+                    OP_HALT: $display("[cpu] PC: %d IR: %b op_code: HALT" , PC, IR);
+                    OP_LD:   $display("[cpu] PC: %d IR: %b op_code: LD"   , PC, IR);
+                    OP_ST:   $display("[cpu] PC: %d IR: %b op_code: ST (%d = r[%d])", PC, IR, d_addr, op_d);
+                    OP_LDI:  $display("[cpu] PC: %d IR: %b op_code: LDI (r[%d] = %d", PC, IR, op_d, op_a);
+                    OP_MOV:  $display("[cpu] PC: %d IR: %b op_code: MOV"  , PC, IR);
+                    OP_ADD:  $display("[cpu] PC: %d IR: %b op_code: ADD (r[%d]: %d + r[%d]: %d"  , PC, IR, op_a, regs[op_a], op_b, regs[op_b]);
+                    OP_SUB:  $display("[cpu] PC: %d IR: %b op_code: SUB"  , PC, IR);
+                    OP_AND:  $display("[cpu] PC: %d IR: %b op_code: AND"  , PC, IR);
+                    OP_OR:   $display("[cpu] PC: %d IR: %b op_code: OR"   , PC, IR);
+                    OP_XOR:  $display("[cpu] PC: %d IR: %b op_code: XOR"  , PC, IR);
+                    OP_ROTL: $display("[cpu] PC: %d IR: %b op_code: ROTL" , PC, IR);
+                    OP_ROTR: $display("[cpu] PC: %d IR: %b op_code: ROTR" , PC, IR);
+                    OP_JMP:  $display("[cpu] PC: %d IR: %b op_code: JMP"  , PC, IR);
                     default: $display("[cpu] ERROR: Invalid op_code: %b", op_code);
                 endcase
             end
