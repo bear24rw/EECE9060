@@ -25,12 +25,20 @@ if __name__ == "__main__":
     labels = {}
     jumps = []
 
+    #
+    # Pad up until the reset vector
+    #
     for _ in range(constants.reset_vector):
         bytes.append(0)
 
+    #
+    # Fill out instruction bytes
+    #
     for line in asm_file:
 
         line = line.upper().strip()
+
+        if len(line) == 0: continue
 
         if ';' in line:
             line = line[:line.find(';')]
@@ -92,6 +100,9 @@ if __name__ == "__main__":
         bytes.append(a)
         bytes.append(b)
 
+    #
+    # Pad the rest of the rom with 0s
+    #
     for _ in range(constants.ram_size - len(bytes)):
         bytes.append(0)
 
@@ -105,7 +116,6 @@ if __name__ == "__main__":
     #
     # Write all bytes out
     #
-
     for byte in bytes:
         txt_file.write(bits(byte)+'\n')
         rom_file.write(chr(byte))
