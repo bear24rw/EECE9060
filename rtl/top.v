@@ -67,13 +67,12 @@ module top(
         .boot_data(boot_data)
     );
 
-    wire ram_clk = booting ? CLOCK_50 : cpu_clk;
     wire ram_we  = booting ? 1        : cpu_we;
     wire [15:0] ram_addr = booting ? boot_addr : cpu_addr;
     wire [15:0] ram_cur_addr;
 
     ram ram(
-        .clk(ram_clk),
+        .clk(cpu_clk),
         .addr(ram_addr[`RAM_ADDR_BITS-1:0]),
         .we(ram_we),
         .do(ram_do),
@@ -126,7 +125,7 @@ module top(
     wire uart_rst = booting ? boot_rst : cpu_rst;
 
     uart uart(
-        .sys_clk(CLOCK_50),
+        .sys_clk(cpu_clk),
         .sys_rst(uart_rst),
         .uart_rx(UART_RXD),
         .uart_tx(UART_TXD),
@@ -148,7 +147,7 @@ module top(
     seven_seg s3(ram_cur_addr[15:12], HEX3);
 
     bootloader bootloader(
-        .clk(CLOCK_50),
+        .clk(cpu_clk),
         .rx_data(uart_rx_data),
         .tx_data(boot_tx_data),
         .rx_done(uart_rx_done),
