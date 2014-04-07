@@ -21,9 +21,9 @@ module top(
 `ifdef SIMULATION
     wire cpu_clk = CLOCK_50;
 `else
-    wire cpu_clk;
+    wire cpu_clk = CLOCK_50;
     //clk_div #(.COUNT(10000)) clk_div(CLOCK_50, cpu_clk);
-    clk_div #(.COUNT(100000)) clk_div(CLOCK_50, cpu_clk);
+    //clk_div #(.COUNT(100000)) clk_div(CLOCK_50, cpu_clk);
     //clk_div #(.COUNT(10000000)) clk_div(CLOCK_50, cpu_clk);
 `endif
 
@@ -54,7 +54,7 @@ module top(
     wire       boot_transmit;
 
     cpu cpu(
-        .clk(cpu_clk),
+        .clk(~cpu_clk),
         .rst(cpu_rst),
         .addr(cpu_addr),
         .di(cpu_di),
@@ -80,12 +80,23 @@ module top(
     wire [15:0] ram_cur_addr;
 
     ram ram(
-        .clk(~ram_clk),
+        .clk(ram_clk),
         .addr(ram_addr[`RAM_ADDR_BITS-1:0]),
         .we(ram_we),
         .do(ram_do),
         .di(ram_di),
         .cur_addr(ram_cur_addr)
+    );
+
+    wire [7:0] timer_do;
+
+    timer timer(
+        .clk(cpu_clk),
+        .rst(cpu_rst),
+        .addr(cpu_addr),
+        .we(cpu_we),
+        .do(timer_do),
+        .di(cpu_do)
     );
 
     wire [7:0] io_ledr;
@@ -100,6 +111,7 @@ module top(
         .do(io_do),
         .di(io_di),
 
+        .timer_do(timer_do),
         .switches(SW),
         .keys(KEY),
         .ledr(io_ledr),

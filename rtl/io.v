@@ -9,6 +9,7 @@ module io(
     output reg [7:0] do,
     input      [7:0] di,
 
+    input      [7:0] timer_do,
     input      [9:0] switches,
     input      [3:0] keys,
 
@@ -67,7 +68,8 @@ module io(
                     `ADDR_SW:       do <= switches[7:0];
                     `ADDR_UART_RXD: do <= uart_rxd_data;
                     `ADDR_UART_CTL: do <= uart_control;
-                    default:        do <= 'b0;
+                    `ADDR_TMR_TRIG: do <= timer_do;
+                    default:        do <= 'hFA;
                 endcase
             end
         end

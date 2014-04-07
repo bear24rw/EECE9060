@@ -7,9 +7,10 @@
 
 PROJECT = top
 ASSIGNMENT_FILES = top.qpf top.qsf
-SIM_TB = cpu_tb
+SIM_TB = top_tb
 
 SRC = \
+	../rtl/bootloader.v \
 	../rtl/clk_div.v \
 	../rtl/constants.v \
 	../rtl/cpu.v \
@@ -17,11 +18,13 @@ SRC = \
 	../rtl/mmu.v \
 	../rtl/ram.v \
 	../rtl/seven_seg.v \
+	../rtl/timer.v \
 	../rtl/top.v \
 	../rtl/uart.v \
 
 SIM_SRC = \
-	../sim/cpu_tb.v
+	../sim/cpu_tb.v \
+	../sim/top_tb.v
 
 VINCDIR = \
 	-I../rtl/

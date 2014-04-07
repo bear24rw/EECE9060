@@ -39,12 +39,16 @@ if __name__ == "__main__":
         line = line.upper().strip()
 
         if ';' in line:
-            line = line[:line.find(';')]
+            line = line[:line.find(';')].strip()
 
         if len(line) == 0: continue
 
         if ":" in line:
-            labels[line.replace(':','')] = len(bytes)
+            name = line.replace(':','')
+            if name in labels:
+                print "Duplicate label: " + name
+                sys.exit(1)
+            labels[name] = len(bytes)
             continue
 
         if line == 'HALT':
@@ -78,23 +82,26 @@ if __name__ == "__main__":
             bytes.append(0)
             continue
 
-        args = [int(x) for x in args]
+        # convert strings of decimal, hex, or binary to ints
+        for i, arg in enumerate(args):
+            if not isinstance(arg, int):
+                args[i] = eval(arg)
 
-        if op in ('LD', 'ST', 'BRZ', 'BRNZ'):
+        if op in ('LD', 'ST', 'STL'):
             d, addr = args
             bytes.append(d)
             bytes.append(h_byte(addr))
             bytes.append(l_byte(addr))
             continue
 
-        if op in ('LDI'):
+        if op in ('LDL'):
             d, value = args
             bytes.append(d)
             bytes.append(value)
             bytes.append(0)
             continue
 
-        if op in ('MOV'):
+        if op in ('MOV', 'INV'):
             d, a = args
             bytes.append(d)
             bytes.append(a)
