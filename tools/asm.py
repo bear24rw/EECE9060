@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+
 import sys
 import constants
+import re
 
 def bits(number):
     return bin(number)[2:].zfill(8)
@@ -44,7 +47,7 @@ if __name__ == "__main__":
 
         if len(line) == 0: continue
 
-        if line.startswith("#DEFINE"):
+        if line.startswith(".DEFINE"):
             _, original, new = line.split()
             defines[original] = new
             continue
@@ -67,7 +70,7 @@ if __name__ == "__main__":
             bytes.append(0)
             continue
 
-        op, args = line.split()
+        op, args = line.split(' ', 1)
 
         bytes.append(constants.op_codes[op])
 
@@ -79,6 +82,9 @@ if __name__ == "__main__":
             continue
 
         args = [x.strip() for x in args.split(",")]
+
+        # remove the R off the register names (R5 -> 5)
+        args = [re.sub(r'R(\d+)', r'\1', x) for x in args]
 
         for i, arg in enumerate(args):
             if arg in constants.address_names:

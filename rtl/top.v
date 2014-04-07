@@ -66,10 +66,6 @@ module top(
         .di(ram_di)
     );
 
-    //seven_seg s0(ram_addr[3:0], HEX0);
-    //seven_seg s1(ram_addr[7:4], HEX1);
-    //seven_seg s2(ram_addr[11:8], HEX2);
-    //seven_seg s3(ram_addr[15:12], HEX3);
     seven_seg s0(hex_0, HEX0);
     seven_seg s1(hex_1, HEX1);
     seven_seg s2(hex_2, HEX2);

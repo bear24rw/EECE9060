@@ -9,23 +9,16 @@ stl 0x7D,TMR_2
 stl 0x78,TMR_1
 stl 0x40,TMR_0
 
-; led value will be stored in R0
-ldl 0,0xFF
+ldl r0,0xFF         ; led value will be stored in R0
 
 loop:
 
-    ; flip state of R0 (R0 = ~R0)
-    inv 0,0
+    inv r0,r0       ; flip state of R0 (R0 = ~R0)
+    st r0,LEDG      ; update the leds
 
-    ; update the leds
-    st 0,LEDG
-
-    ; reset the timer
-    st 0,TMR_RST
-
-delay:
-    ; wait for timer to trigger
-    ld 1,TMR_TRIG
-    brz 1,delay
+    stl 0,TMR_RST   ; reset the timer
+delay:              ; wait for timer to trigger
+    ld r1,TMR_TRIG
+    brz r1,delay
 
     jmp loop
