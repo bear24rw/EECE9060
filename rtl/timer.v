@@ -10,6 +10,10 @@ module timer(
     output [7:0] do
 );
 
+    // ----------------------------------------------------
+    //                  TRIGGER LEVEL
+    // ----------------------------------------------------
+
     // default the timer to trigger every 100ms
     // 50Mhz clock = 20ns
     // 100ms / 20ns = 5*10^6 = 00 4C 4B 40
@@ -35,27 +39,29 @@ module timer(
         end
     end
 
+    // ----------------------------------------------------
+    //                      COUNTER
+    // ----------------------------------------------------
+
     reg [31:0] count = 0;
     reg triggered = 0;
+    assign do = {7'b0, triggered};
 
     always @(posedge clk, posedge rst) begin
         if (rst) begin
             count <= 0;
             triggered <= 0;
         end else begin
-            if (we && (addr == `ADDR_TMR_RST)) begin
-                count <= 0;
-                triggered <= 0;
-            end else if (count == trigger_value) begin
+            if (count == trigger_value) begin
                 triggered <= 1;
                 count <= 0;
+            end else if (we && (addr == `ADDR_TMR_RST)) begin
+                count <= 0;
+                triggered <= 0;
             end else begin
-                if (addr == `ADDR_TMR_TRIG) triggered <= 0;
                 count <= count + 1;
             end
         end
     end
-
-    assign do = {7'b0, triggered};
 
 endmodule
