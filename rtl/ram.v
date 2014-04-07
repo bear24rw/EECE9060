@@ -5,8 +5,7 @@ module ram(
     input we,
     input [ADDR_BITS-1:0] addr,
     input [7:0] di,
-    output [7:0] do,
-    output [ADDR_BITS-1:0] cur_addr
+    output [7:0] do
 );
 
     parameter WIDTH     = 8;                // 8 bits wide
@@ -31,5 +30,4 @@ module ram(
     // blocks in single port mode
     assign do = ram[addr_reg];
 
-    assign cur_addr = addr_reg;
 endmodule

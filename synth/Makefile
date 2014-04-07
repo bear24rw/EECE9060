@@ -14,10 +14,11 @@ SRC = \
 	../rtl/clk_div.v \
 	../rtl/constants.v \
 	../rtl/cpu.v \
-	../rtl/io.v \
-	../rtl/mmu.v \
+	../rtl/gpo.v \
+	../rtl/mem_mapper.v \
 	../rtl/ram.v \
 	../rtl/seven_seg.v \
+	../rtl/soc.v \
 	../rtl/timer.v \
 	../rtl/top.v \
 	../rtl/uart.v \

@@ -22,6 +22,7 @@ if __name__ == "__main__":
 
     bytes = []
 
+    defines = {}
     labels = {}
     jumps = []
 
@@ -42,6 +43,14 @@ if __name__ == "__main__":
             line = line[:line.find(';')].strip()
 
         if len(line) == 0: continue
+
+        if line.startswith("#DEFINE"):
+            _, original, new = line.split()
+            defines[original] = new
+            continue
+
+        for word in defines:
+            line = line.replace(word, defines[word])
 
         if ":" in line:
             name = line.replace(':','')

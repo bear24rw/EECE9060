@@ -37,7 +37,6 @@ module timer(
 
     reg [31:0] count = 0;
     reg triggered = 0;
-    reg read_flag = 0;
 
     always @(posedge clk, posedge rst) begin
         if (rst) begin

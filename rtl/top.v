@@ -1,5 +1,3 @@
-`include "constants.v"
-
 module top(
     input CLOCK_50,
 
@@ -18,151 +16,63 @@ module top(
     output UART_TXD
 );
 
-    wire cpu_clk = CLOCK_50;
+    wire [15:0] ram_addr;
+    wire [7:0]  ram_di;
+    wire [7:0]  ram_do;
+    wire        ram_we;
 
-    wire boot_rst;
-    wire cpu_rst;
-    wire booting;
+    wire [7:0] hex_0;
+    wire [7:0] hex_1;
+    wire [7:0] hex_2;
+    wire [7:0] hex_3;
 
-    wire [15:0] cpu_addr;
-    wire       cpu_we;
-    wire [7:0] cpu_di;
-    wire [7:0] cpu_do;
-    wire [7:0] ram_di;
-    wire [7:0] ram_do;
-    wire [7:0] io_di;
-    wire [7:0] io_do;
-    wire [7:0] uart_rx_data;
-    wire [7:0] uart_tx_data;
-    wire uart_rx_done;
-    wire uart_tx_done;
-    wire uart_transmit;
-    wire [6:0] seg0;
-    wire [6:0] seg1;
-    wire [6:0] seg2;
-    wire [6:0] seg3;
-    wire [7:0] boot_data;
-    wire [15:0] boot_addr;
-    wire [7:0] boot_tx_data;
-    wire       boot_transmit;
+    soc soc(
+        .clk(CLOCK_50),
+        .boot_trigger(~KEY[0]),
+        .booting(LEDR[9]),
 
-    cpu cpu(
-        .clk(~cpu_clk),
-        .rst(cpu_rst),
-        .addr(cpu_addr),
-        .di(cpu_di),
-        .do(cpu_do),
-        .we(cpu_we)
-    );
-
-    mmu mmu(
-        .addr(cpu_addr),
-        .cpu_di(cpu_di),
-        .cpu_do(cpu_do),
+        .ram_addr(ram_addr),
         .ram_di(ram_di),
         .ram_do(ram_do),
-        .io_di(io_di),
-        .io_do(io_do),
-        .booting(booting),
-        .boot_data(boot_data)
+        .ram_we(ram_we),
+
+        .gpi_0(SW[7:0]),
+        .gpi_1({4'b0, KEY}),
+        .gpi_2(),
+        .gpi_3(),
+        .gpi_4(),
+        .gpi_5(),
+        .gpi_6(),
+        .gpi_7(),
+
+        .gpo_0(LEDR[7:0]),
+        .gpo_1(LEDG[7:0]),
+        .gpo_2(hex_0),
+        .gpo_3(hex_1),
+        .gpo_4(hex_2),
+        .gpo_5(hex_3),
+        .gpo_6(),
+        .gpo_7(),
+
+        .uart_rxd(UART_RXD),
+        .uart_txd(UART_TXD)
     );
 
-    wire ram_we  = booting ? 1        : cpu_we;
-    wire [15:0] ram_addr = booting ? boot_addr : cpu_addr;
-    wire [15:0] ram_cur_addr;
-
     ram ram(
-        .clk(cpu_clk),
+        .clk(CLOCK_50),
         .addr(ram_addr[`RAM_ADDR_BITS-1:0]),
         .we(ram_we),
         .do(ram_do),
-        .di(ram_di),
-        .cur_addr(ram_cur_addr)
+        .di(ram_di)
     );
 
-    wire [7:0] timer_do;
-
-    timer timer(
-        .clk(cpu_clk),
-        .rst(cpu_rst),
-        .addr(cpu_addr),
-        .we(cpu_we),
-        .do(timer_do),
-        .di(cpu_do)
-    );
-
-    wire [7:0] io_ledr;
-    wire [7:0] io_ledg;
-
-    io io(
-        .clk(cpu_clk),
-        .rst(cpu_rst),
-
-        .addr(cpu_addr),
-        .we(cpu_we),
-        .do(io_do),
-        .di(io_di),
-
-        .timer_do(timer_do),
-        .switches(SW),
-        .keys(KEY),
-        .ledr(io_ledr),
-        .ledg(io_ledg),
-        .seg0(seg0),
-        .seg1(seg1),
-        .seg2(seg2),
-        .seg3(seg3),
-        .uart_rxd_data(uart_rx_data),
-        .uart_txd_data(uart_tx_data),
-        .uart_rxd_done(uart_rx_done),
-        .uart_txd_done(uart_tx_done),
-        .uart_transmit(uart_transmit),
-        .boot_tx_data(boot_tx_data),
-        .boot_transmit(boot_transmit),
-        .booting(booting)
-    );
-
-    wire uart_rst = booting ? boot_rst : cpu_rst;
-
-    uart uart(
-        .sys_clk(cpu_clk),
-        .sys_rst(uart_rst),
-        .uart_rx(UART_RXD),
-        .uart_tx(UART_TXD),
-        .divisor(50000000/115200/16),
-        .rx_data(uart_rx_data),
-        .tx_data(uart_tx_data),
-        .rx_done(uart_rx_done),
-        .tx_done(uart_tx_done),
-        .tx_wr(uart_transmit)
-    );
-
-    //seven_seg s0(seg0, HEX0);
-    //seven_seg s1(seg1, HEX1);
-    //seven_seg s2(seg2, HEX2);
-    //seven_seg s3(seg3, HEX3);
-    seven_seg s0(ram_cur_addr[3:0], HEX0);
-    seven_seg s1(ram_cur_addr[7:4], HEX1);
-    seven_seg s2(ram_cur_addr[11:8], HEX2);
-    seven_seg s3(ram_cur_addr[15:12], HEX3);
-
-    bootloader bootloader(
-        .clk(cpu_clk),
-        .rx_data(uart_rx_data),
-        .tx_data(boot_tx_data),
-        .rx_done(uart_rx_done),
-        .tx_done(uart_tx_done),
-        .transmit(boot_transmit),
-        .ram_addr(boot_addr),
-        .ram_data(boot_data),
-        .trigger(~KEY[0]),
-        .booting(booting),
-        .cpu_rst(cpu_rst),
-        .boot_rst(boot_rst)
-    );
-
-    assign LEDR[9]   = booting;
-    assign LEDR[7:0] = io_ledr;
-    assign LEDG      = io_ledg;
+    //seven_seg s0(ram_addr[3:0], HEX0);
+    //seven_seg s1(ram_addr[7:4], HEX1);
+    //seven_seg s2(ram_addr[11:8], HEX2);
+    //seven_seg s3(ram_addr[15:12], HEX3);
+    seven_seg s0(hex_0, HEX0);
+    seven_seg s1(hex_1, HEX1);
+    seven_seg s2(hex_2, HEX2);
+    seven_seg s3(hex_3, HEX3);
 
 endmodule

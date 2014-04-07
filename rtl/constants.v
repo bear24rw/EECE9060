@@ -1,21 +1,28 @@
-`define ADDR_KEY        0
-`define ADDR_SW         1
-`define ADDR_LEDR       2
-`define ADDR_LEDG       3
-`define ADDR_SEG0       4
-`define ADDR_SEG1       5
-`define ADDR_SEG2       6
-`define ADDR_SEG3       7
-`define ADDR_UART_RXD   8
-`define ADDR_UART_TXD   9
-`define ADDR_UART_CTL   10
-`define ADDR_TMR_0      11
-`define ADDR_TMR_1      12
-`define ADDR_TMR_2      13
-`define ADDR_TMR_3      14
-`define ADDR_TMR_TRIG   15
-`define ADDR_TMR_RST    16
-
+`define ADDR_GPI_0      0
+`define ADDR_GPI_1      1
+`define ADDR_GPI_2      2
+`define ADDR_GPI_3      3
+`define ADDR_GPI_4      4
+`define ADDR_GPI_5      5
+`define ADDR_GPI_6      6
+`define ADDR_GPI_7      7
+`define ADDR_GPO_0      8
+`define ADDR_GPO_1      9
+`define ADDR_GPO_2      10
+`define ADDR_GPO_3      11
+`define ADDR_GPO_4      12
+`define ADDR_GPO_5      13
+`define ADDR_GPO_6      14
+`define ADDR_GPO_7      15
+`define ADDR_UART_RXD   16
+`define ADDR_UART_TXD   17
+`define ADDR_UART_CTL   18
+`define ADDR_TMR_0      19
+`define ADDR_TMR_1      20
+`define ADDR_TMR_2      21
+`define ADDR_TMR_3      22
+`define ADDR_TMR_TRIG   23
+`define ADDR_TMR_RST    24
 
 `define RESET_VECTOR    32
 

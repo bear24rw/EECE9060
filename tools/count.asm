@@ -1,3 +1,6 @@
+#define LEDR GPO_0
+#define LEDG GPO_1
+
 ldl 0,0
 main:
     st 0,LEDG

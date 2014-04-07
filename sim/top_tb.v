@@ -18,14 +18,22 @@ module top_tb;
     );
 
     initial begin
-        $monitor("[%d] LEDR: %b LEDG: %b", $time, ledr, ledg,);
-        $readmemb("../tools/timer_blink.txt", top_tb.top.ram.ram);
-        #100 top_tb.top.bootloader.booting = 0;
-        #100 top_tb.top.bootloader.cpu_rst = 0;
-        #100 top_tb.top.bootloader.cpu_rst = 1;
-        #100 top_tb.top.bootloader.cpu_rst = 0;
-        #5000000000;
-        //#209000;
+        $dumpfile("top_tb.vcd");
+        $dumpvars(0, top_tb);
+        $monitor("[%d] LEDR: %b LEDG: %b timer: %x/%x trigger: %x",
+            $time,
+            ledr,
+            ledg,
+            top_tb.top.soc.timer.count,
+            top_tb.top.soc.timer.trigger_value,
+            top_tb.top.soc.timer.triggered
+        );
+        $readmemb("../tools/blink_1hz.txt", top_tb.top.ram.ram);
+        #100 top_tb.top.soc.bootloader.booting = 0;
+        #100 top_tb.top.soc.bootloader.cpu_rst = 0;
+        #100 top_tb.top.soc.bootloader.cpu_rst = 1;
+        #100 top_tb.top.soc.bootloader.cpu_rst = 0;
+        #100000;
         $finish;
     end
 
