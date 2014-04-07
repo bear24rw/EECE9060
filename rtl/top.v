@@ -18,14 +18,7 @@ module top(
     output UART_TXD
 );
 
-`ifdef SIMULATION
     wire cpu_clk = CLOCK_50;
-`else
-    wire cpu_clk = CLOCK_50;
-    //clk_div #(.COUNT(10000)) clk_div(CLOCK_50, cpu_clk);
-    //clk_div #(.COUNT(100000)) clk_div(CLOCK_50, cpu_clk);
-    //clk_div #(.COUNT(10000000)) clk_div(CLOCK_50, cpu_clk);
-`endif
 
     wire boot_rst;
     wire cpu_rst;
