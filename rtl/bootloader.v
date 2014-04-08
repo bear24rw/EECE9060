@@ -19,111 +19,79 @@ module bootloader(
 );
 
     initial booting = 1;
-
-    // ----------------------------------------------------
-    //              RESET STATE MACHINE
-    // ----------------------------------------------------
-
-    // wait for the boot process to trigger then put the cpu
-    // in reset, then reset the boot state machine, then wait
-    // for the boot state machine to indicate we are finished
-    // booting and then take the cpu out of reset
-
-    `define S_BOOT_RESET_START  0
-    `define S_BOOT_RESET_END    1
-    `define S_WAIT_FOR_DONE     2
-    `define S_CPU_RESET_START   3
-    `define S_CPU_RESET_END     4
-
-    reg [3:0] rst_state = `S_BOOT_RESET_START;
-
-    reg done = 0;   // flag to indicate we are done booting
-
-    always @(posedge clk) begin
-        if (trigger) begin
-            booting <= 1;
-            boot_rst <= 0;
-            cpu_rst <= 0;
-            rst_state <= `S_BOOT_RESET_START;
-        end else begin
-            case (rst_state)
-
-                `S_BOOT_RESET_START: begin
-                    boot_rst <= 1;
-                    rst_state <= `S_BOOT_RESET_END;
-                end
-
-                `S_BOOT_RESET_END: begin
-                    boot_rst <= 0;
-                    rst_state <= `S_WAIT_FOR_DONE;
-                end
-
-                `S_WAIT_FOR_DONE: begin
-                    if (done) begin
-                        booting <= 0;
-                        rst_state <= `S_CPU_RESET_START;
-                    end
-                end
-
-                `S_CPU_RESET_START: begin
-                    cpu_rst <= 1;
-                    rst_state <= `S_CPU_RESET_END;
-                end
-
-                `S_CPU_RESET_END: begin
-                    cpu_rst <= 0;
-                end
-            endcase
-        end
-    end
+    initial cpu_rst = 0;
+    initial boot_rst = 0;
 
     // ----------------------------------------------------
     //              ROM LOADING STATE MACHINE
     // ----------------------------------------------------
 
-    `define S_RECV       3    // wait for data byte
-    `define S_SEND       2    // request next data byte from uart
-    `define S_WRITE      4    // write data to RAM
-    `define S_WRITE_WAIT 5    // write data to RAM
-    `define S_IDLE       1
+    localparam S_BOOT_RST_H     = 0;    // pull boot reset flag high
+    localparam S_BOOT_RST_L     = 1;    // pull boot reset flag low
+    localparam S_RECV           = 2;    // wait for data byte
+    localparam S_SEND           = 3;    // send that back back to ACK
+    localparam S_WRITE          = 4;    // write data to RAM
+    localparam S_CPU_RST_H      = 5;    // pull cpu reset high
+    localparam S_CPU_RST_L      = 6;    // pull cpu reset low
+    localparam S_DONE           = 7;    // idle
 
-    reg [3:0] state = `S_IDLE;
+    reg [3:0] state = S_DONE;
 
     always @(posedge clk) begin
-        if (boot_rst) begin
-            tx_data <= 0;
-            transmit <= 0;
-            state <= `S_RECV;
+        if (trigger) begin
+            boot_rst <= 0;
+            booting <= 1;
+            cpu_rst <= 0;
             ram_addr <= 0;
-            done <= 0;
+            state <= S_BOOT_RST_H;
+            transmit <= 0;
+            tx_data <= 0;
         end else begin
             case (state)
 
-                `S_RECV: begin
-                    // if we got a new byte, send it back to ACK.
+                S_BOOT_RST_H: begin
+                    boot_rst <= 1;
+                    state <= S_BOOT_RST_L;
+                end
+
+                S_BOOT_RST_L: begin
+                    boot_rst <= 0;
+                    state <= S_RECV;
+                end
+
+                S_RECV: begin
                     if (rx_done) begin
                         tx_data <= rx_data;
                         ram_data <= rx_data;
                         transmit <= 1;
-                        state <= `S_SEND;
+                        state <= S_SEND;
                     end
                 end
 
-                `S_SEND: begin
+                S_SEND: begin
                     transmit <= 0;
                     if (tx_done) begin
-                        state <= `S_WRITE;
+                        state <= S_WRITE;
                     end
                 end
 
-                `S_WRITE: begin
+                S_WRITE: begin
                     if (ram_addr == (2**`RAM_ADDR_BITS)-1) begin
-                        done <= 1;
-                        state <= `S_IDLE;
+                        state <= S_CPU_RST_H;
                     end else begin
                         ram_addr <= ram_addr + 1;
-                        state <= `S_RECV;
+                        state <= S_RECV;
                     end
+                end
+
+                S_CPU_RST_H: begin
+                    cpu_rst <= 1;
+                    booting <= 0;
+                    state <= S_CPU_RST_L;
+                end
+
+                S_CPU_RST_L: begin
+                    cpu_rst <= 0;
                 end
 
             endcase
