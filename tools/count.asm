@@ -1,19 +1,17 @@
-.define LEDR GPO_0
-.define LEDG GPO_1
+.define LEDR GPO_0  ; red leds are on GPO 0
+.define LEDG GPO_1  ; green leds are on GPO 1
 
-ldl r0,0
+ldl r0,0            ; initialize register 0 to 0
 
 main:
-    st r0,LEDG
-    st r0,LEDR
-    inc r0
+    st r0,LEDG      ; output register 0 to green leds
+    st r0,LEDR      ; output register 0 to red leds
+    inc r0          ; increment register 0
 
-    ; reset the timer
-    stl 0,TMR_RST
+    stl 0,TMR_RST   ; reset the timer by writing to the TMR_RST address
 
 delay:
-    ; wait for timer to trigger
-    ld r1,TMR_TRIG
-    brz r1,delay
+    ld r1,TMR_TRIG  ; get the status of the timer trigger
+    brz r1,delay    ; if its still zero keep delaying
 
-    jmp main
+    jmp main        ; go back and do it all again
