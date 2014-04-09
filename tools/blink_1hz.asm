@@ -1,5 +1,5 @@
-#define LEDR GPO_0
-#define LEDG GPO_1
+.define LEDR GPO_0
+.define LEDG GPO_1
 
 ; 1Hz blink = 0.5s delays
 ; 50Mhz clock = 20ns

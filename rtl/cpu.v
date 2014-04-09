@@ -41,7 +41,7 @@ module cpu(
 
 
     // --------------------------------
-    //
+    //      Internal registers
     // --------------------------------
 
     reg [15:0] PC = `RESET_VECTOR;
@@ -63,6 +63,10 @@ module cpu(
     assign addr = get_data ? d_addr : i_addr;
     assign we = (op_code == `OP_ST || op_code == `OP_STL) && (state == STORE);
 
+    // ---------------------------------
+    // Instruction address state machine
+    // ---------------------------------
+
     always @(posedge clk, posedge rst) begin
         if (rst) begin
             i_addr <= `RESET_VECTOR;
@@ -75,6 +79,10 @@ module cpu(
             endcase
         end
     end
+
+    // ---------------------------------
+    //      Execution state machine
+    // ---------------------------------
 
     always @(posedge clk, posedge rst) begin
         if (rst) begin
@@ -134,6 +142,9 @@ module cpu(
         end
     end
 
+    // ---------------------------------
+    //     Simulation Debug Message
+    // ---------------------------------
 
     /*
     always @(posedge clk, posedge rst) begin
@@ -189,6 +200,5 @@ module cpu(
         end
     end
     */
-
 
 endmodule
